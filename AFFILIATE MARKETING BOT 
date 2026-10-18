@@ -1,0 +1,90 @@
+01  import os
+02  from telegram import Update
+03  from telegram.ext import (
+04      Application,
+05      CommandHandler,
+06      MessageHandler,
+07      ContextTypes,
+08      filters
+09  )
+
+10  BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+
+11  async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+12      message = (
+13          "👋 Welcome to Digital Skills Academy!\n\n"
+14          "I can help you learn about affiliate marketing.\n\n"
+15          "Send one of these messages:\n"
+16          "• What is affiliate marketing?\n"
+17          "• How do I start?\n"
+18          "• How do commissions work?\n"
+19          "• Show me courses\n"
+20          "• Contact support"
+21      )
+22      await update.message.reply_text(message)
+
+23  async def reply_to_customer(
+24      update: Update,
+25      context: ContextTypes.DEFAULT_TYPE
+26  ):
+27      question = update.message.text.lower()
+
+28      if "what is affiliate marketing" in question:
+29          answer = (
+30              "Affiliate marketing involves promoting another "
+31              "company's products through a tracked link. "
+32              "You may earn a commission when a qualifying sale "
+33              "is made under the program's terms."
+34          )
+
+35      elif "how do i start" in question:
+36          answer = (
+37              "Here are the basic steps:\n"
+38              "1. Choose a topic you understand.\n"
+39              "2. Find a legitimate affiliate program.\n"
+40              "3. Learn its rules and commission structure.\n"
+41              "4. Create helpful content.\n"
+42              "5. Share your affiliate link transparently."
+43          )
+
+44      elif "commission" in question:
+45          answer = (
+46              "A commission is the amount you earn from a "
+47              "qualifying action, such as a sale. The rate, "
+48              "payment method and conditions depend on the "
+49              "affiliate program."
+50          )
+
+51      elif "show me courses" in question:
+52          answer = (
+53              "You can view the educational resources here:\n"
+54              "YOUR_PRODUCT_LINK\n\n"
+55              "Please review the course details before purchasing."
+56          )
+
+57      elif "contact support" in question:
+58          answer = (
+59              "For assistance, contact the channel owner:\n"
+60              "@YOUR_TELEGRAM_USERNAME"
+61          )
+
+62      else:
+63          answer = (
+64              "Thanks for your message! 😊\n"
+65              "Try asking about affiliate marketing, "
+66              "getting started, commissions or courses. "
+67              "For other questions, contact our support team."
+68          )
+
+69      await update.message.reply_text(answer)
+
+70  app = Application.builder().token(BOT_TOKEN).build()
+
+71  app.add_handler(CommandHandler("start", start))
+
+72  app.add_handler(
+73      MessageHandler(filters.TEXT & ~filters.COMMAND,
+74                     reply_to_customer)
+75  )
+
+76  app.run_polling()
